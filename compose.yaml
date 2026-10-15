@@ -1,0 +1,70 @@
+# Apache Kafka with a browser view: a topic is a log, a producer adds to the end of it and a
+# consumer reads it from wherever it likes.
+#
+# This is a deliberately small Kafka, one broker with a 256 MB heap: enough to learn on and
+# not meant for load. Press Open on Kafka UI to see it: make a topic, produce messages, read
+# them back from the beginning and watch each partition's offsets. The terminal reaches the
+# same UI by its service name, kafka-ui, with curl, so every click has a command beside it. The
+# terminal has no Kafka command-line tools: the UI's own web API is what it types to.
+#
+# The broker's data is not saved: stopping the lab and starting it again is an empty Kafka.
+#
+# This lab has no way out to the internet, which is why nothing here needs it. Hand in the
+# topic you made, the messages you produced, and the offset each partition had before and
+# after, with a sentence on why every partition starts counting from zero.
+
+services:
+  kafka:
+    image: apache/kafka:4.2.2
+    user: "1000"
+    # One node that is both broker and controller (KRaft, no ZooKeeper), told its own name on
+    # the copy's network so another service can reach it by that name.
+    environment:
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_HEAP_OPTS: -Xms256m -Xmx256m
+    expose: ["9092"]
+    # nc is in the image and the java tools are not worth a second JVM inside 512 MB.
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 9092"]
+      interval: 3s
+      timeout: 3s
+      retries: 60
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  kafka-ui:
+    image: kafbat/kafka-ui:v1.5.0
+    user: "100"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: lab
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: "false"
+      JAVA_OPTS: -Xms128m -Xmx256m
+    expose: ["8080"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/actuator/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 60
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    labels:
+      lab.title: Kafka UI
+      lab.open: "8080"
