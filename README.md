@@ -1,5 +1,7 @@
 # Apache Kafka lab with Docker Compose: topics, producers, consumers, partitions and offsets in the browser
 
+[English](README.md) | [Français](README.fr.md) | [日本語](README.ja.md) | [Español](README.es.md)
+
 [![check](https://github.com/mitsurutech/lab-kafka/actions/workflows/check.yml/badge.svg)](https://github.com/mitsurutech/lab-kafka/actions/workflows/check.yml)
 
 A ready-made **Apache Kafka lab** for classrooms, from the [MitsuruTech Learning Platform](https://mitsurutech.co.uk/learning), where schools and colleges give every student their own databases, containers and terminal in the browser. Each student gets their own copy of a **single-broker Apache Kafka** (KRaft mode, no ZooKeeper) with **Kafka UI** beside it, to **create a topic, produce messages, read them back from the beginning** and watch the **partitions and offsets** that make Kafka what it is, with nothing installed.
@@ -91,7 +93,11 @@ test/check.sh
 
 [Apache Kafka](https://kafka.apache.org) is Apache-2.0 licensed and [Kafka UI](https://github.com/kafbat/kafka-ui) is Apache-2.0 licensed. The images are `apache/kafka:4.2.2` and `kafbat/kafka-ui:v1.5.0`, run unmodified from the projects' own public images; nothing from them is built or redistributed here.
 
-The compose file, the tests and this documentation are MIT licensed, see [LICENSE](LICENSE): copy it, change it, teach with it. The applications inside are the licences of their own projects, linked above.
+The applications inside are the licences of their own projects, linked above.
+
+## Licence
+
+This work is licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). You may share it and adapt it for learning and teaching, if you credit Mitsuru Technologies Ltd, do not use it commercially, and share anything you make from it under the same licence. The full text is in the `LICENSE` file.
 
 ## About
 
